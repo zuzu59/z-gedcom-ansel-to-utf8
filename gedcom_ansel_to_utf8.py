@@ -21,6 +21,7 @@ import subprocess
 from pathlib import Path
 import sys
 import shutil
+import unicodedata
 
 
 def detect_charset(path: Path) -> str | None:
@@ -63,7 +64,7 @@ def convert_with_iconv(infile: Path, outfile: Path, char_value: str = 'UTF-8') -
                     lines[i] = f'1 CHAR {char_value}' + ('\r\n' if line.endswith('\r\n') else '\n')
                     break
             new = ''.join(lines)
-            outfile.write_text(new, encoding='utf-8')
+            outfile.write_text(unicodedata.normalize('NFC', new), encoding='utf-8')
             return True
         except subprocess.CalledProcessError as e:
             print(f"⚠️  iconv failed: {e.stderr.decode(errors='replace')}", file=sys.stderr)
@@ -93,7 +94,7 @@ def convert_with_iconv(infile: Path, outfile: Path, char_value: str = 'UTF-8') -
             lines[i] = f'1 CHAR {char_value}' + ('\r\n' if line.endswith('\r\n') else '\n')
             break
     new = ''.join(lines)
-    outfile.write_text(new, encoding='utf-8')
+    outfile.write_text(unicodedata.normalize('NFC', new), encoding='utf-8')
     return True
 
 
